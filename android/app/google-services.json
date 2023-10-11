@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "10497503946",
+    "project_id": "rifas-eb869",
+    "storage_bucket": "rifas-eb869.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10497503946:android:bdff8a7a953d0bd9c37a33",
+        "android_client_info": {
+          "package_name": "com.brezker.rifas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKLq-5pKl54ON4AhGEqEkVajjaJD6Ckv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
