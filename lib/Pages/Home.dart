@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rifas/Pages/AddRifa.dart';
+import 'package:rifas/Pages/Rifas.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,7 +34,9 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(Icons.monetization_on),
               title: Text("Rifas"),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>RifasPage()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.payment_sharp),
@@ -44,7 +47,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('rifas').snapshots(),
+        stream: FirebaseFirestore
+            .instance
+            .collection('rifas')
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();

@@ -55,6 +55,15 @@ class _AddRifaState extends State<AddRifa> {
     }
   }
 
+  Future<void> crearBoletos(String rifaId, int cantidad) async {
+    for (int i=0; i < cantidad; i++) {
+      await FirebaseFirestore
+          .instance
+          .collection('boletos')
+          .add({'rifaId': rifaId, 'numeroBoleto': i+1, 'reservado': false});
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +180,7 @@ class _AddRifaState extends State<AddRifa> {
             ),
             Padding(
               padding: EdgeInsets.all(20),
-              child: TextButton.icon(
+              child: idDoc.isEmpty ? Container() : TextButton.icon(
                 onPressed: () async {
                   await _performDeletion();
                   Navigator.pop(context);
@@ -186,8 +195,6 @@ class _AddRifaState extends State<AddRifa> {
                 ),
               ),
             )
-
-
           ],
         ),
       ),
@@ -211,7 +218,8 @@ class _AddRifaState extends State<AddRifa> {
           'fechaFin': endDate
         };
         if(idDoc.isEmpty){
-          await rifas.add(rifaData);
+          var nuevaRifa = await rifas.add(rifaData);
+          crearBoletos(nuevaRifa.id, int.tryParse(numeroBoletosController.text)??0);
         }else{
           await rifas.doc(idDoc).update(rifaData);
         }
