@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rifas/Pages/AddRifa.dart';
 import 'package:rifas/Pages/Rifas.dart';
+import 'package:rifas/Pages/SeleccionaRifa.dart';
+
+bool reservado = false;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,7 +44,11 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(Icons.payment_sharp),
               title: Text("Boletos Apartados"),
-              onTap: () {},
+              onTap: () {
+                bool reservado = true;
+                print('El valor de reservado en Rifas.dart es: $reservado');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> SeleccionaRifaPage()));
+              },
             ),
           ],
         ),
