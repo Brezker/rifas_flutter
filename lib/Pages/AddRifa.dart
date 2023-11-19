@@ -1,8 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rifas/Pages/Home.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:quickalert/quickalert.dart';
+import 'package:quickalert/quickalert.dart';
 
 class AddRifa extends StatefulWidget {
   final String idDoc;
@@ -38,6 +43,11 @@ class _AddRifaState extends State<AddRifa> {
   TextEditingController fechaIController= TextEditingController(text: DateTime.now().toString());
   TextEditingController fechaFController= TextEditingController(text: DateTime.now().toString());
 
+  final ImagePicker _picker = ImagePicker();
+  firebase_storage.Reference? _storageReference;
+  File? _image;
+
+
   _AddRifaState(this.idDoc) {
     print("Valor de idDoc: $idDoc");
     if (idDoc.isNotEmpty) {
@@ -64,6 +74,23 @@ class _AddRifaState extends State<AddRifa> {
     }
   }
 
+  Future<void> _getImageFromCamera() async{
+    XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if( image != null ){
+      setState(() {
+        _image = File(image.path);
+      });
+    }
+  }
+
+  Future<void> _getImageFromGallery() async{
+    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if( image != null ){
+      setState(() {
+        _image = File(image.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +112,7 @@ class _AddRifaState extends State<AddRifa> {
                       border: OutlineInputBorder(), hintText: "Nombre Rifa"),
                   validator: (value) {
                     if (value == "") {
-                      return "este campo es obligatorio";
+                      return "Este campo es obligatorio";
                     }
                     return null;
                   }),
@@ -98,7 +125,7 @@ class _AddRifaState extends State<AddRifa> {
                     border: OutlineInputBorder(), hintText: "Descripción"),
                     validator: (value) {
                       if (value == "") {
-                        return "este campo es obligatorio";
+                        return "Este campo es obligatorio";
                       }
                       return null;
                     }),
@@ -178,6 +205,17 @@ class _AddRifaState extends State<AddRifa> {
                 });
               },
             ),
+
+            _image == null
+              ? Text("No se selecciono la imagen")
+              : Image.file(_image!, height: 200.0,),
+            ElevatedButton(
+              onPressed: () async{
+              await _getImageFromCamera();
+            },
+              child: Text("Tomar Foto"),
+            ),
+
             Padding(
               padding: EdgeInsets.all(20),
               child: idDoc.isEmpty ? Container() : TextButton.icon(
@@ -201,6 +239,17 @@ class _AddRifaState extends State<AddRifa> {
 
       floatingActionButton: FloatingActionButton(
       onPressed: ()async{
+        _storageReference = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('carpeta_destino/${DateTime.now()}.png');
+
+        await _storageReference?.putFile(_image!);
+
+        String? downloadURL = await _storageReference?.getDownloadURL();
+        
+        print(downloadURL);
+
+
 
         print("Valor de idDoc al guardar/editar: $idDoc");
         var isValid = _form.currentState?.validate();
@@ -209,13 +258,15 @@ class _AddRifaState extends State<AddRifa> {
           return;
 
         }
+
         Map<String, dynamic> rifaData={
           'nombre':nombreController.text,
           'descripcion': descripcionController.text,
           'numeroBoletos':int.tryParse(numeroBoletosController.text)?? 0,
           'precioBoletos':double.tryParse(precioBoletosController.text)?? 0,
           'fechaInicio': startDate,
-          'fechaFin': endDate
+          'fechaFin': endDate,
+          'imagenUrl': downloadURL
         };
         if(idDoc.isEmpty){
           var nuevaRifa = await rifas.add(rifaData);
@@ -228,6 +279,7 @@ class _AddRifaState extends State<AddRifa> {
       context,
       MaterialPageRoute(builder: (context)=> HomePage()),
       );
+        return;
       },
       child: Icon(Icons.save)
       ),

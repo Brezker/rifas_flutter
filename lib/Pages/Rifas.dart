@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rifas/Pages/BoletosRifa.dart';
+import 'package:rifas/Pages/Login.dart';
 
 class RifasPage extends StatefulWidget {
   const RifasPage({super.key});
@@ -17,6 +18,31 @@ class _RifasPageState extends State<RifasPage> {
         title: Text("Rifas"),
       ),
 
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Image.network(
+                          'https://cdn-icons-png.flaticon.com/512/1144/1144760.png'),
+                    ),
+                    Text("Usuario")
+                  ],
+                )),
+            ListTile(
+              leading: Icon(Icons.person_2),
+              title: Text("Identificate"),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+              },
+            ),
+          ],
+        ),
+      ),
+
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('rifas').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -29,6 +55,7 @@ class _RifasPageState extends State<RifasPage> {
               itemBuilder: (context, index) {
                 final DocumentSnapshot rifa = docs[index];
                 return ListTile(
+                  leading: Image.network(rifa['imagenUrl']),
                   title: Text(rifa['nombre']),
                   subtitle: Text(rifa['descripcion']),
                   onTap: (){

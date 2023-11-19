@@ -34,13 +34,13 @@ class _HomePageState extends State<HomePage> {
                     Text("Usuario")
                   ],
                 )),
-            ListTile(
+            /*ListTile(
               leading: Icon(Icons.monetization_on),
               title: Text("Rifas"),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>RifasPage()));
               },
-            ),
+            ),*/
             ListTile(
               leading: Icon(Icons.payment_sharp),
               title: Text("Boletos Apartados"),
@@ -68,6 +68,7 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 final DocumentSnapshot rifa = docs[index];
                 return ListTile(
+                  leading: Image.network(rifa['imagenUrl']),
                   title: Text(rifa['nombre']),
                   subtitle: Text(rifa['descripcion']),
                   onTap: (){
